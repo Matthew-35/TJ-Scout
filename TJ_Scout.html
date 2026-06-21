@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QRScout Lite</title>
+    <title>TJ Scout</title>
     <script src="qrcode.min.js"></script>
     <script src="papaparse.min.js"></script>
     
@@ -355,7 +355,7 @@
 
     <nav class="navbar">
         <div class="container nav-content">
-            <h1 class="nav-title" id="navTitle">QRScout Replica</h1>
+            <h1 class="nav-title" id="navTitle">TJ Scout</h1>
             
             <div class="nav-actions">
                 <select id="scoutingPosition" class="btn btn-small btn-nav-select" onchange="savePositionSelection(); autofillTeam()">
@@ -495,7 +495,7 @@
         // ---------------------------------------------------------
 
         function initApp() {
-            document.getElementById('navTitle').innerText = currentConfig.page_title || currentConfig.title || "QRScout";
+            document.getElementById('navTitle').innerText = currentConfig.page_title || currentConfig.title || "TJ Scout";
             const container = document.getElementById('formContainer');
             container.innerHTML = '';
             
@@ -731,7 +731,7 @@
                     }
                 });
             });
-            return values.join(delimiter);
+            return values.join(delimiter)+"\n";
         }
 
         function commitForm() {
