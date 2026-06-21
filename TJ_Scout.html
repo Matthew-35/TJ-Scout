@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QRScout Lite</title>
+    <script src="qrcode.min.js"></script>
+    <script src="papaparse.min.js"></script>
+    
+    <style>
+        /* -----------------------------------
+           Custom CSS / Dark Theme Variables
+        ------------------------------------ */
+        :root {
+            --bg-body: #121212;
+            --bg-card: #1e1e1e;
+            --bg-nav: #111827;
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --border-color: #374151;
+            --input-bg: #2d3748;
+            
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --success: #10b981;
+            --success-hover: #059669;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            
+            --warning-bg: #422006;
+            --warning-text: #fcd34d;
+            --warning-border: #b45309;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            padding-bottom: 100px;
+        }
+
+        /* Layout & Nav */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .navbar {
+            background-color: var(--bg-nav);
+            color: white;
+            padding: 1rem;
+            /* position: sticky; */
+            top: 0;
+            z-index: 50;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+        }
+
+        .nav-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .nav-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @media (min-width: 600px) {
+            .nav-content {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        }
+
+        /* Buttons & Utility */
+        .btn {
+            cursor: pointer;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-small { padding: 0.5rem 0.75rem; font-size: 0.875rem; }
+        .btn-large { padding: 0.75rem 1.5rem; font-size: 1rem; width: 100%; max-width: 200px; }
+
+        .btn-nav-select { background-color: #1e3a8a; color: white; border: 1px solid #3b82f6; outline: none; }
+        .btn-load-csv { background-color: #065f46; color: white; border: 1px solid #10b981; }
+        .btn-load-csv:hover { background-color: #047857; }
+        .btn-load-cfg { background-color: #3730a3; color: white; border: 1px solid #6366f1; }
+        .btn-load-cfg:hover { background-color: #4338ca; }
+        
+        .btn-commit { background-color: var(--success); color: #000; }
+        .btn-commit:hover { background-color: var(--success-hover); color: white;}
+        .btn-reset { background-color: var(--danger); color: white; }
+        .btn-reset:hover { background-color: var(--danger-hover); }
+        
+        .btn-blue { background-color: var(--primary); color: white; width: 100%; }
+        .btn-blue:hover { background-color: var(--primary-hover); }
+        .btn-gray { background-color: #4b5563; color: white; width: 100%; }
+        .btn-gray:hover { background-color: #374151; }
+
+        /* Form Sections */
+        .section-card {
+            background-color: var(--bg-card);
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .fields-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .field-container {
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s, box-shadow 0.2s;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+            color: #d1d5db;
+        }
+
+        .required-star { color: var(--danger); }
+
+        /* Inputs */
+        .input-field {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            outline: none;
+            background-color: var(--input-bg);
+            color: var(--text-main);
+            transition: border-color 0.2s;
+        }
+
+        .input-field:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+        }
+
+        input[type="checkbox"] {
+            width: 1.25rem;
+            height: 1.25rem;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        /* Counter Elements */
+        .counter-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .btn-counter {
+            padding: 0.5rem 1.25rem;
+            font-size: 1.25rem;
+            font-weight: bold;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            border: 1px solid;
+            color: white;
+        }
+        .btn-counter-sub { background-color: #991b1b; border-color: #ef4444; }
+        .btn-counter-add { background-color: #065f46; border-color: #10b981; }
+        .counter-input {
+            width: 5rem;
+            text-align: center;
+            font-weight: bold;
+            background-color: #111827;
+            pointer-events: none;
+        }
+
+        /* Range Slider */
+        .range-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        input[type="range"] {
+            flex-grow: 1;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+        .range-val {
+            font-weight: bold;
+            font-size: 1.125rem;
+            width: 2rem;
+            text-align: center;
+            color: var(--primary);
+        }
+
+        /* Multiselect Grid */
+        .multiselect-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .multiselect-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            background-color: var(--input-bg);
+            transition: background-color 0.2s;
+        }
+        .multiselect-label:hover { background-color: #374151; }
+
+        /* Validation & Highlights */
+        .field-error {
+            background-color: #450a0a;
+            box-shadow: 0 0 0 1px var(--danger);
+        }
+        .input-success {
+            background-color: #064e3b !important;
+            transition: background-color 0.5s;
+        }
+
+        /* Bottom Action Bar */
+        .bottom-bar {
+            /* position: fixed;
+            bottom: 0;
+            left: 0; */
+            /* width: 100%; */
+            background-color: var(--bg-nav);
+            border-top: 1px solid var(--border-color);
+            padding: 1rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.5);
+            z-index: 40;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            z-index: 100;
+        }
+        .modal-overlay.hidden { display: none; }
+        
+        .modal-content {
+            background-color: var(--bg-card);
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 400px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-color);
+        }
+        
+        .modal-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 1.5rem; color: var(--text-main); }
+        
+        /* VERY IMPORTANT: QR Code needs to stay white for hardware scanners to reliably read it */
+        #qrcode {
+            margin-bottom: 1.5rem;
+            background-color: #ffffff;
+            padding: 0.75rem;
+            border-radius: 0.25rem;
+            box-shadow: 0 0 10px rgba(255,255,255,0.1);
+        }
+        
+        .raw-output-wrapper { width: 100%; margin-bottom: 1.5rem; }
+        .raw-output-label { font-size: 0.875rem; font-weight: bold; color: var(--text-muted); margin-bottom: 0.25rem; display: block;}
+        .raw-output-box {
+            background-color: #111827;
+            color: #34d399; /* Terminal green */
+            padding: 0.75rem;
+            border-radius: 0.25rem;
+            border: 1px solid var(--border-color);
+            font-family: monospace;
+            font-size: 0.75rem;
+            word-break: break-all;
+            overflow-y: auto;
+            max-height: 8rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            width: 100%;
+        }
+
+        .fallback-warning {
+            font-size: 0.875rem;
+            color: var(--warning-text);
+            background-color: var(--warning-bg);
+            border: 1px solid var(--warning-border);
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            font-style: italic;
+        }
+        
+        .hidden-input { display: none; }
+        .init-msg { text-align: center; color: var(--text-muted); margin-top: 2.5rem; }
+
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="container nav-content">
+            <h1 class="nav-title" id="navTitle">QRScout Replica</h1>
+            
+            <div class="nav-actions">
+                <select id="scoutingPosition" class="btn btn-small btn-nav-select" onchange="savePositionSelection(); autofillTeam()">
+                    <option value="">Select Position...</option>
+                    <option value="red1">Red 1</option>
+                    <option value="red2">Red 2</option>
+                    <option value="red3">Red 3</option>
+                    <option value="blue1">Blue 1</option>
+                    <option value="blue2">Blue 2</option>
+                    <option value="blue3">Blue 3</option>
+                </select>
+
+                <label for="scheduleUpload" class="btn btn-small btn-load-csv">Load CSV</label>
+                <input type="file" id="scheduleUpload" accept=".csv" class="hidden-input" onchange="loadSchedule(event)">
+
+                <label for="configUpload" class="btn btn-small btn-load-cfg">Load Config</label>
+                <input type="file" id="configUpload" accept=".json" class="hidden-input" onchange="loadConfig(event)">
+            </div>
+        </div>
+    </nav>
+
+    <main class="container" id="formContainer">
+        <div class="init-msg">Booting app & checking local storage...</div>
+    </main>
+
+    <div class="bottom-bar">
+        <button onclick="commitForm()" class="btn btn-large btn-commit">Commit</button>
+        <button onclick="resetForm()" class="btn btn-large btn-reset">Reset Form</button>
+    </div>
+
+    <div id="qrModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h2 class="modal-title">Match Data Output</h2>
+            <div id="qrcode"></div>
+            
+            <div class="raw-output-wrapper">
+                <span class="raw-output-label">Raw Output:</span>
+                <div class="raw-output-box" id="qrText"></div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button onclick="copyData()" class="btn btn-small btn-blue">Copy Data</button>
+                <button onclick="closeModal()" class="btn btn-small btn-gray">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ---------------------------------------------------------
+        // Core State & Config
+        // ---------------------------------------------------------
+        
+        let matchSchedule = []; 
+        let uniqueMatches = []; 
+        let uniqueTeams = [];   
+
+        let currentConfig = {
+            "title": "QRScout",
+            "page_title": "FRC Scouting Default",
+            "delimiter": "\t",
+            "sections": [
+                {
+                    "name": "Prematch",
+                    "fields": [
+                        { "title": "Scouter Name", "type": "text", "required": true, "code": "scouterName", "formResetBehavior": "preserve" },
+                        { "title": "Match Number", "type": "TBA-match-number", "required": true, "code": "matchNumber", "formResetBehavior": "increment", "defaultValue": 1 },
+                        { "title": "Team Number", "type": "TBA-team-and-robot", "required": true, "code": "teamNumber", "formResetBehavior": "reset" }
+                    ]
+                }
+            ]
+        };
+
+        const positionSelect = document.getElementById('scoutingPosition');
+
+        // ---------------------------------------------------------
+        // Bootstrapper & Local Storage
+        // ---------------------------------------------------------
+
+        function bootApp() {
+            // 1. Attempt to load config from LocalStorage
+            const storedConfig = localStorage.getItem('qrscout_config');
+            if (storedConfig) {
+                try {
+                    currentConfig = JSON.parse(storedConfig);
+                } catch(e) {
+                    console.warn("Failed to parse local config. Using default.");
+                }
+            }
+
+            // 2. Attempt to load match schedule from LocalStorage
+            const storedSchedule = localStorage.getItem('qrscout_schedule');
+            if (storedSchedule) {
+                try {
+                    matchSchedule = JSON.parse(storedSchedule);
+                    extractScheduleSets(matchSchedule);
+                } catch(e) {
+                    console.warn("Failed to parse local schedule. Starting empty.");
+                }
+            }
+
+            // 3. Load position selection
+            selectedPosition = localStorage.getItem("selectedPosition");
+            // console.log(selectedPosition);
+            if (selectedPosition) {
+                positionSelect.value = localStorage.getItem("selectedPosition");
+            }
+            
+
+            // 4. Render the UI
+            initApp();
+        }
+
+        // Helper to extract dropdown lists
+        function extractScheduleSets(dataArray) {
+            let matchesSet = new Set();
+            let teamsSet = new Set();
+            
+            dataArray.forEach(row => {
+                let mVal = row['match_number'] || row['description'] || '';
+                let matchNum = parseInt(mVal.replace(/\D/g,''), 10);
+                if (!isNaN(matchNum)) matchesSet.add(matchNum);
+                
+                ['red1', 'red2', 'red3', 'blue1', 'blue2', 'blue3'].forEach(pos => {
+                    if (row[pos]) {
+                        let teamNum = parseInt(row[pos].replace('frc', ''), 10);
+                        if (!isNaN(teamNum)) teamsSet.add(teamNum);
+                    }
+                });
+            });
+            
+            uniqueMatches = Array.from(matchesSet).sort((a,b) => a - b);
+            uniqueTeams = Array.from(teamsSet).sort((a,b) => a - b);
+        }
+
+        // ---------------------------------------------------------
+        // Initialization & DOM Rendering
+        // ---------------------------------------------------------
+
+        function initApp() {
+            document.getElementById('navTitle').innerText = currentConfig.page_title || currentConfig.title || "QRScout";
+            const container = document.getElementById('formContainer');
+            container.innerHTML = '';
+            
+            currentConfig.sections.forEach(sec => {
+                let sectionHtml = `<div class="section-card">
+                                     <h2 class="section-title">${sec.name}</h2>
+                                     <div class="fields-wrapper">`;
+                sec.fields.forEach(f => {
+                    sectionHtml += buildField(f);
+                });
+                sectionHtml += `</div></div>`;
+                container.innerHTML += sectionHtml;
+            });
+            
+            setTimeout(autofillTeam, 100);
+        }
+
+        function buildField(f) {
+            let html = `<div id="container_${f.code}" class="field-container">
+                        <label class="field-label">${f.title} ${f.required ? '<span class="required-star">*</span>' : ''}</label>`;
+            
+            let val = f.defaultValue !== undefined ? f.defaultValue : '';
+            let isMatch = f.type === 'TBA-match-number' || f.code === 'matchNumber';
+            let onChangeEvt = isMatch ? 'onchange="autofillTeam()"' : '';
+
+            switch(f.type) {
+                case 'TBA-match-number':
+                    if (matchSchedule.length > 0) {
+                        html += `<select id="${f.code}" ${onChangeEvt} class="input-field">
+                                   <option value="">Select Match...</option>`;
+                        uniqueMatches.forEach(m => {
+                            html += `<option value="${m}" ${m == val ? 'selected' : ''}>${m}</option>`;
+                        });
+                        html += `</select>`;
+                    } else {
+                        html += `<input type="number" id="${f.code}" value="${val}" ${onChangeEvt} class="input-field">`;
+                    }
+                    break;
+                case 'TBA-team-and-robot':
+                    if (matchSchedule.length > 0) {
+                        html += `<select id="${f.code}" class="input-field">
+                                   <option value="">Select Team...</option>`;
+                        uniqueTeams.forEach(t => {
+                            html += `<option value="${t}" ${t == val ? 'selected' : ''}>${t}</option>`;
+                        });
+                        html += `</select>`;
+                    } else {
+                        html += `<input type="number" id="${f.code}" value="${val}" class="input-field">`;
+                    }
+                    break;
+                case 'text':
+                case 'number':
+                    let inputType = (f.type === 'text') ? 'text' : 'number';
+                    html += `<input type="${inputType}" id="${f.code}" value="${val}" ${onChangeEvt} class="input-field">`;
+                    break;
+                case 'boolean':
+                    html += `<label><input type="checkbox" id="${f.code}" ${val ? 'checked' : ''}></label>`;
+                    break;
+                case 'select':
+                    html += `<select id="${f.code}" class="input-field">
+                               <option value="">Select an option...</option>`;
+                    if (f.choices) {
+                        for (const [k, v] of Object.entries(f.choices)) {
+                            html += `<option value="${k}" ${k == val ? 'selected' : ''}>${v}</option>`;
+                        }
+                    }
+                    html += `</select>`;
+                    break;
+                case 'counter':
+                    val = val || 0;
+                    html += `<div class="counter-wrapper">
+                               <button type="button" class="btn-counter btn-counter-sub" onclick="updateCounter('${f.code}', -1)">-</button>
+                               <input type="number" id="${f.code}" value="${val}" ${onChangeEvt} class="input-field counter-input" readonly>
+                               <button type="button" class="btn-counter btn-counter-add" onclick="updateCounter('${f.code}', 1)">+</button>
+                             </div>`;
+                    break;
+                case 'range':
+                    let min = f.min || 0; let max = f.max || 10; val = val || 0;
+                    html += `<div class="range-wrapper">
+                               <input type="range" id="${f.code}" min="${min}" max="${max}" value="${val}" oninput="document.getElementById('${f.code}_val').innerText=this.value">
+                               <span class="range-val" id="${f.code}_val">${val}</span>
+                             </div>`;
+                    break;
+                case 'multiselect':
+                    if (f.choices) {
+                        html += `<div class="multiselect-grid">`;
+                        for (const [k, v] of Object.entries(f.choices)) {
+                            html += `<label class="multiselect-label">
+                                       <input type="checkbox" name="${f.code}" value="${k}">
+                                       <span>${v}</span>
+                                     </label>`;
+                        }
+                        html += `</div>`;
+                    }
+                    break;
+                default:
+                    html += `<div class="fallback-warning">[Complex Type Fallback: ${f.type}]</div>`;
+            }
+            html += `</div>`;
+            return html;
+        }
+
+        // ---------------------------------------------------------
+        // File Loading
+        // ---------------------------------------------------------
+
+        function loadConfig(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                try {
+                    currentConfig = JSON.parse(evt.target.result);
+                    // Save to local storage
+                    localStorage.setItem('qrscout_config', JSON.stringify(currentConfig));
+                    initApp();
+                    alert("Config loaded and saved to device!");
+                } catch(err) {
+                    alert("Failed to parse config. Ensure it is a valid JSON file.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function loadSchedule(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            Papa.parse(file, {
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    let formattedData = results.data.map(row => {
+                        let newRow = {};
+                        for (let key in row) {
+                            let cleanKey = key.toLowerCase().replace(/\s/g, '');
+                            newRow[cleanKey] = row[key];
+                        }
+                        return newRow;
+                    });
+                    
+                    matchSchedule = formattedData;
+                    // Save to local storage
+                    localStorage.setItem('qrscout_schedule', JSON.stringify(matchSchedule));
+                    
+                    extractScheduleSets(matchSchedule);
+                    alert(`Schedule loaded and saved! Found ${uniqueMatches.length} matches and ${uniqueTeams.length} unique teams.`);
+                    initApp();
+                },
+                error: function(err) {
+                    alert("Failed to parse CSV schedule.");
+                }
+            });
+        }
+
+        // ---------------------------------------------------------
+        // Logic & Interaction
+        // ---------------------------------------------------------
+
+        function updateCounter(id, delta) {
+            let el = document.getElementById(id);
+            if (!el) return;
+            let val = parseInt(el.value || 0) + delta;
+            if (val < 0) val = 0;
+            el.value = val;
+            
+            currentConfig.sections.forEach(sec => {
+                sec.fields.forEach(f => {
+                    if (f.code === id && (f.type === 'TBA-match-number' || f.code === 'matchNumber')) {
+                        autofillTeam();
+                    }
+                });
+            });
+        }
+
+        function autofillTeam() {
+            if (matchSchedule.length === 0) return; 
+            
+            let matchId = 'matchNumber';
+            let teamId = 'teamNumber';
+            
+            currentConfig.sections.forEach(sec => {
+                sec.fields.forEach(f => {
+                    if (f.type === 'TBA-match-number' || f.code === 'matchNumber') matchId = f.code;
+                    if (f.type === 'TBA-team-and-robot' || f.code === 'teamNumber') teamId = f.code;
+                });
+            });
+
+            const matchInput = document.getElementById(matchId);
+            const teamInput = document.getElementById(teamId);
+            
+            if (!matchInput || !teamInput || !positionSelect.value) return;
+
+            const matchNumStr = matchInput.value.toString();
+            const position = positionSelect.value; 
+            
+            const matchData = matchSchedule.find(m => {
+                let mVal = m['match_number'] || m['description'] || '';
+                let extractedNum = mVal.replace(/\D/g,'');
+                return extractedNum === matchNumStr;
+            });
+
+            if (matchData && matchData[position]) {
+                let teamNum = matchData[position].replace('frc', '');
+                teamInput.value = teamNum;
+                teamInput.classList.add('input-success');
+                setTimeout(() => teamInput.classList.remove('input-success'), 500);
+            }
+        }
+
+        // ---------------------------------------------------------
+        // Data Gathering & Generation
+        // ---------------------------------------------------------
+
+        function gatherData() {
+            let values = [];
+            let delimiter = currentConfig.delimiter || "\t";
+            currentConfig.sections.forEach(sec => {
+                sec.fields.forEach(f => {
+                    if (f.type === 'action-tracker') {
+                        if (f.actions && Array.isArray(f.actions)) {
+                            f.actions.forEach(() => { values.push("0"); values.push(""); });
+                        } else { values.push("0"); values.push(""); }
+                    } else if (f.type === 'multiselect') {
+                        let checkboxes = document.querySelectorAll(`input[name="${f.code}"]:checked`);
+                        values.push(Array.from(checkboxes).map(cb => cb.value).join(','));
+                    } else if (f.type === 'boolean') {
+                        let el = document.getElementById(f.code);
+                        values.push(el ? (el.checked ? "true" : "false") : "false");
+                    } else {
+                        let el = document.getElementById(f.code);
+                        values.push(el ? el.value : "");
+                    }
+                });
+            });
+            return values.join(delimiter);
+        }
+
+        function commitForm() {
+            let valid = true; let missing = [];
+            currentConfig.sections.forEach(sec => {
+                sec.fields.forEach(f => {
+                    if (f.required) {
+                        let val;
+                        if (f.type === 'multiselect') val = document.querySelectorAll(`input[name="${f.code}"]:checked`).length > 0 ? "checked" : "";
+                        else if (f.type === 'boolean') val = "checked"; 
+                        else val = document.getElementById(f.code) ? document.getElementById(f.code).value.trim() : "";
+                        
+                        let container = document.getElementById(`container_${f.code}`);
+                        if (!val) { valid = false; missing.push(f.title); if(container) container.classList.add('field-error'); } 
+                        else { if(container) container.classList.remove('field-error'); }
+                    }
+                });
+            });
+
+            if (!valid) return alert("Please fill out required fields:\n\n" + missing.join("\n"));
+
+            const dataStr = gatherData();
+            document.getElementById('qrText').innerText = dataStr;
+            const qrContainer = document.getElementById('qrcode');
+            qrContainer.innerHTML = "";
+            new QRCode(qrContainer, {
+                text: dataStr, width: 280, height: 280,
+                colorDark : "#000000", colorLight : "#ffffff", // Strict white/black for scanning
+                correctLevel : QRCode.CorrectLevel.L
+            });
+            document.getElementById('qrModal').classList.remove('hidden');
+        }
+
+        function resetForm() {
+            if (confirm("Reset form?")) {
+                currentConfig.sections.forEach(sec => {
+                    sec.fields.forEach(f => {
+                        let el = document.getElementById(f.code);
+                        if(f.type === 'multiselect') {
+                            document.querySelectorAll(`input[name="${f.code}"]`).forEach(cb => cb.checked = false);
+                        } else if (el) {
+                            if (f.formResetBehavior === 'preserve') { /* Skip */ } 
+                            else if (f.formResetBehavior === 'increment' && (f.type === 'number' || f.type === 'TBA-match-number')) {
+                                el.value = parseInt(el.value || 0) + 1;
+                            } else { 
+                                if (f.type === 'boolean') el.checked = f.defaultValue === true;
+                                else {
+                                    el.value = f.defaultValue !== undefined ? f.defaultValue : '';
+                                    if (f.type === 'range') document.getElementById(`${f.code}_val`).innerText = el.value || 0;
+                                }
+                            }
+                        }
+                    });
+                });
+                
+                autofillTeam();
+                closeModal();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function savePositionSelection() {
+            localStorage.setItem("selectedPosition", positionSelect.value);
+            // console.log(positionSelect.value);
+        }
+
+        function closeModal() { document.getElementById('qrModal').classList.add('hidden'); }
+        function copyData() {
+            navigator.clipboard.writeText(document.getElementById('qrText').innerText)
+                .then(() => alert("Copied!"))
+                .catch(() => alert("Failed to copy. Select text manually."));
+        }
+
+        // Fire the boot sequence instead of directly calling initApp
+        window.onload = bootApp;
+    </script>
+</body>
+</html>
