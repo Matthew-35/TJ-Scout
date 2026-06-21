@@ -1,0 +1,261 @@
+{
+    "title": "QRScout",
+    "page_title": "Rebuilt - 2026 Newton",
+    "delimiter": "\t",
+    "teamNumber": 88,
+    "floatingField": {
+        "show": false,
+        "codeValue": "teamNumber"
+    },
+    "theme": {
+        "light": {
+            "background": "0 0% 100%",
+            "foreground": "0 0% 3.9%",
+            "card": "0 0% 100%",
+            "card_foreground": "0 0% 3.9%",
+            "popover": "0 0% 100%",
+            "popover_foreground": "0 0% 3.9%",
+            "primary": "354.44 71.3% 47.9%",
+            "primary_foreground": "0 85.7% 97.3%",
+            "secondary": "0 0% 96.1%",
+            "secondary_foreground": "0 0% 9%",
+            "muted": "0 0% 96.1%",
+            "muted_foreground": "0 0% 45.1%",
+            "accent": "0 0% 96.1%",
+            "accent_foreground": "0 0% 9%",
+            "destructive": "0 84.2% 60.2%",
+            "destructive_foreground": "0 0% 98%",
+            "border": "0 0% 89.8%",
+            "input": "0 0% 89.8%",
+            "ring": "354.44 71.3% 47.9%",
+            "chart_1": "12 76% 61%",
+            "chart_2": "173 58% 39%",
+            "chart_3": "197 37% 24%",
+            "chart_4": "43 74% 66%",
+            "chart_5": "27 87% 67%"
+        },
+        "dark": {
+            "background": "0 0% 3.9%",
+            "foreground": "0 0% 98%",
+            "card": "0 0% 3.9%",
+            "card_foreground": "0 0% 98%",
+            "popover": "0 0% 3.9%",
+            "popover_foreground": "0 0% 98%",
+            "primary": "354.44 71.3% 47.9%",
+            "primary_foreground": "0 85.7% 97.3%",
+            "secondary": "0 0% 14.9%",
+            "secondary_foreground": "0 0% 98%",
+            "muted": "0 0% 14.9%",
+            "muted_foreground": "0 0% 63.9%",
+            "accent": "0 0% 14.9%",
+            "accent_foreground": "0 0% 98%",
+            "destructive": "0 62.8% 30.6%",
+            "destructive_foreground": "0 0% 98%",
+            "border": "0 0% 14.9%",
+            "input": "0 0% 14.9%",
+            "ring": "354.44 71.3% 47.9%",
+            "chart_1": "220 70% 50%",
+            "chart_2": "160 60% 45%",
+            "chart_3": "30 80% 55%",
+            "chart_4": "280 65% 60%",
+            "chart_5": "340 75% 55%"
+        }
+    },
+    "sections": [
+        {
+            "name": "Prematch",
+            "fields": [
+                {
+                    "title": "Scouter Initials",
+                    "description": "Enter the initials of the scouter.",
+                    "type": "text",
+                    "required": true,
+                    "code": "scouter",
+                    "formResetBehavior": "preserve",
+                    "defaultValue": ""
+                },
+                {
+                    "title": "Match Number",
+                    "description": "Select the match number.",
+                    "type": "TBA-match-number",
+                    "required": true,
+                    "code": "matchNumber",
+                    "formResetBehavior": "increment",
+                    "defaultValue": 1
+                },
+                {
+                    "title": "Team and Robot",
+                    "description": "Select the team and robot position you are scouting.",
+                    "type": "TBA-team-and-robot",
+                    "required": true,
+                    "code": "robot",
+                    "formResetBehavior": "preserve",
+                    "defaultValue": null
+                },
+                {
+                    "title": "Starting Position",
+                    "description": "The starting position of the robot.",
+                    "type": "select",
+                    "required": true,
+                    "code": "startPos",
+                    "formResetBehavior": "reset",
+                    "defaultValue": "",
+                    "choices": {
+                        "OT": "Outpost Trench",
+                        "OBFT": "Outpost Bump Favoring Trench",
+                        "OBFH": "Outpost Bump Favoring Hub",
+                        "H": "Hub",
+                        "DBFH": "Depot Bump Favoring Hub",
+                        "DBFT": "Depot Bump Favoring Trench",
+                        "DT": "Depot Trench",
+                        "N/A": "N/A"
+                    }
+                },
+                {
+                    "title": "No Show",
+                    "description": "Check if the robot did not show up for the match.",
+                    "type": "boolean",
+                    "required": false,
+                    "code": "noShow",
+                    "formResetBehavior": "reset",
+                    "defaultValue": false
+                }
+            ]
+        },
+        {
+            "name": "Auto",
+            "fields": [
+                {
+                    "title": "Auto Rating",
+                    "description": "Rate the robot's autonomous performance.",
+                    "type": "select",
+                    "required": true,
+                    "code": "autoRating",
+                    "formResetBehavior": "reset",
+                    "defaultValue": "",
+                    "choices": {
+                        "1": "1 - Best",
+                        "2": "2",
+                        "3": "3",
+                        "4": "4",
+                        "5": "5 - Worst (no auto)",
+                        "N/A": "N/A (no show)"
+                    }
+                },
+                {
+                    "title": "How Many Swipes?",
+                    "description": "How many swipes did the robot complete in auto?",
+                    "type": "select",
+                    "required": true,
+                    "code": "autoSwipes",
+                    "formResetBehavior": "reset",
+                    "defaultValue": "",
+                    "choices": {
+                        "0": "0",
+                        "1": "1",
+                        "2": "2",
+                        "0.5": "0.5",
+                        "1.5": "1.5",
+                        "2.5": "2.5"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Review",
+            "fields": [
+                {
+                    "title": "Offense Rating",
+                    "description": "Rate the offensive performance of the robot.",
+                    "type": "select",
+                    "required": true,
+                    "code": "offRating",
+                    "formResetBehavior": "reset",
+                    "defaultValue": "",
+                    "choices": {
+                        "1": "1 - Best",
+                        "2": "2",
+                        "3": "3",
+                        "4": "4",
+                        "5": "5 - Worst",
+                        "N/A": "N/A"
+                    }
+                },
+                {
+                    "title": "Defense Rating",
+                    "description": "Rate the defensive performance of the robot.",
+                    "type": "select",
+                    "required": true,
+                    "code": "defRating",
+                    "formResetBehavior": "reset",
+                    "defaultValue": "",
+                    "choices": {
+                        "1": "1 - Best",
+                        "2": "2",
+                        "3": "3",
+                        "4": "4",
+                        "5": "5 - Worst",
+                        "N/A": "N/A"
+                    }
+                },
+                {
+                    "title": "Shuttling Fuel",
+                    "type": "boolean",
+                    "required": false,
+                    "code": "shuttledFuel",
+                    "formResetBehavior": "reset",
+                    "defaultValue": false
+                },
+                {
+                    "title": "Inaccurate Shooting",
+                    "type": "boolean",
+                    "required": false,
+                    "code": "inaccShooting",
+                    "formResetBehavior": "reset",
+                    "defaultValue": false
+                },
+                {
+                    "title": "Broken Intake",
+                    "type": "boolean",
+                    "required": false,
+                    "code": "brokenIntake",
+                    "formResetBehavior": "reset",
+                    "defaultValue": false
+                },
+                {
+                    "title": "Beached on Bump/Fuel",
+                    "type": "boolean",
+                    "required": false,
+                    "code": "beached",
+                    "formResetBehavior": "reset",
+                    "defaultValue": false
+                },
+                {
+                    "title": "Died (Not Moving)",
+                    "type": "boolean",
+                    "required": false,
+                    "code": "died",
+                    "formResetBehavior": "reset",
+                    "defaultValue": false
+                },
+                {
+                    "title": "Hey! Watch This Match - It Was Awesome!",
+                    "type": "boolean",
+                    "required": false,
+                    "code": "watchMatch",
+                    "formResetBehavior": "reset",
+                    "defaultValue": false
+                },
+                {
+                    "title": "Comments",
+                    "description": "Any additional comments about the robot.",
+                    "type": "text",
+                    "required": false,
+                    "code": "comments",
+                    "formResetBehavior": "reset",
+                    "defaultValue": ""
+                }
+            ]
+        }
+    ]
+}
