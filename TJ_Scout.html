@@ -405,13 +405,14 @@
         <div class="modal-content">
             <h2 class="modal-title">Settings</h2>
 
-            <label for="configUpload" class="btn btn-small btn-load-cfg">Load Config</label>
+            <label for="configUpload" class="btn btn-small btn-load-cfg">Load Config JSON</label>
             <input type="file" id="configUpload" accept=".json" class="hidden-input" onchange="loadConfig(event)">
+            <button onclick="resetConfig();" class="btn btn-small btn-load-cfg" style="margin-top: 0.3rem;">Reset Config</button>
             <br>
 
-            <label for="scheduleUpload" class="btn btn-small btn-load-csv">Load CSV</label>
+            <label for="scheduleUpload" class="btn btn-small btn-load-csv">Load Schedule CSV</label>
             <input type="file" id="scheduleUpload" accept=".csv" class="hidden-input" onchange="loadSchedule(event)">
-            <button onclick="removeSchedule();" class="btn btn-small btn-load-csv" style="margin-left: 1rem;">Remove Schedule</button>
+            <button onclick="removeSchedule();" class="btn btn-small btn-load-csv" style="margin-top: 0.3rem;">Delete Schedule</button>
             <br>
             
             
@@ -815,6 +816,25 @@
             localStorage.setItem("selectedPosition", positionSelect.value);
             // console.log(positionSelect.value);
         }
+
+
+        function removeSchedule() {
+            if (confirm("Delete the currently loaded schedule? This cannot be undone.")) {
+                matchSchedule = [];
+                uniqueMatches = [];
+                uniqueTeams = [];
+                localStorage.removeItem('qrscout_schedule');
+                initApp();
+            }
+        }
+
+        function resetConfig() {
+            if (confirm("Reset to default config? This cannot be undone.")) {
+                localStorage.removeItem('qrscout_config');
+                location.reload();
+            }
+        }
+
 
         function closeModal() { document.getElementById('qrModal').classList.add('hidden'); }
         function closeSettingsModal() { document.getElementById('settingsModal').classList.add('hidden'); }
