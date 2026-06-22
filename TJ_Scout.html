@@ -105,10 +105,12 @@
         .btn-large { padding: 0.75rem 1.5rem; font-size: 1rem; width: 100%; max-width: 200px; }
 
         .btn-nav-select { background-color: #1e3a8a; color: white; border: 1px solid #3b82f6; outline: none; }
-        .btn-load-csv { background-color: #065f46; color: white; border: 1px solid #10b981; }
+        .btn-load-csv { background-color: #065f46; color: white; border: 1px solid #10b981; width: 100%; }
         .btn-load-csv:hover { background-color: #047857; }
-        .btn-load-cfg { background-color: #3730a3; color: white; border: 1px solid #6366f1; }
+        .btn-load-cfg { background-color: #3730a3; color: white; border: 1px solid #6366f1; width: 100%; }
         .btn-load-cfg:hover { background-color: #4338ca; }
+        .btn-settings { background-color: #065f46; color: white; border: 1px solid #10b981; }
+        .btn-settings:hover { background-color: #047857; }
         
         .btn-commit { background-color: var(--success); color: #000; }
         .btn-commit:hover { background-color: var(--success-hover); color: white;}
@@ -355,7 +357,7 @@
 
     <nav class="navbar">
         <div class="container nav-content">
-            <button onclick="document.getElementById('settingsModal').classList.remove('hidden');" class="btn btn-small btn-load-csv">Settings</button>
+            <button onclick="document.getElementById('settingsModal').classList.remove('hidden');" class="btn btn-small btn-settings">Settings</button>
             <h1 class="nav-title" id="navTitle">TJ Scout</h1>
             
             <div class="nav-actions">
@@ -409,6 +411,7 @@
 
             <label for="scheduleUpload" class="btn btn-small btn-load-csv">Load CSV</label>
             <input type="file" id="scheduleUpload" accept=".csv" class="hidden-input" onchange="loadSchedule(event)">
+            <button onclick="removeSchedule();" class="btn btn-small btn-load-csv" style="margin-left: 1rem;">Remove Schedule</button>
             <br>
             
             
