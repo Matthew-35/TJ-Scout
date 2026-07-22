@@ -844,6 +844,15 @@
                 .catch(() => alert("Failed to copy. Select text manually."));
         }
 
+        
+        window.addEventListener('beforeunload', (event) => {
+            // Cancel the event as stated by the standard.
+            event.preventDefault();
+            // Older browsers require a string value to be set.
+            event.returnValue = '';
+        });
+
+
         // Fire the boot sequence instead of directly calling initApp
         window.onload = bootApp;
     </script>
