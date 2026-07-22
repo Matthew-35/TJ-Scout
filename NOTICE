@@ -1,0 +1,10 @@
+This software includes the following licenced software:
+  - PapaParse
+    Copyright (c) 2015 Matthew Holt
+    Licenced under The MIT Licence
+    Source: https://github.com/mholt/PapaParse
+
+  - qrcodejs
+    Copyright (c) 2012 davidshimjs
+    Licenced under The MIT Licence
+    Source: https://github.com/davidshimjs/qrcodejs
