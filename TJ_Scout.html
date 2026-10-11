@@ -14,14 +14,16 @@
         :root {
             --bg-body: #121212;
             --bg-card: #1e1e1e;
-            --bg-nav: #111827;
+            --bg-nav: hsl(0, 39%, 11%);
             --text-main: #f9fafb;
             --text-muted: #9ca3af;
             --border-color: #374151;
             --input-bg: #2d3748;
+            --btn-bg-1: hwb(224 12% 46%);
+            --btn-bg-1-hover: hwb(224 11% 28%);
             
-            --primary: #3b82f6;
-            --primary-hover: #2563eb;
+            --primary: #f00;
+            --primary-hover: #f00;
             --success: #10b981;
             --success-hover: #059669;
             --danger: #ef4444;
@@ -104,7 +106,8 @@
         .btn-small { padding: 0.5rem 0.75rem; font-size: 0.875rem; }
         .btn-large { padding: 0.75rem 1.5rem; font-size: 1rem; width: 100%; max-width: 200px; }
 
-        .btn-nav-select { background-color: #1e3a8a; color: white; border: 1px solid #3b82f6; outline: none; }
+        .btn-nav-select { background-color: var(--btn-bg-1); color: white; border: 1px solid #3b82f6; outline: none; }
+        .btn-nav-select:hover { background-color: var(--btn-bg-1-hover); }
         .btn-load-csv { background-color: #065f46; color: white; border: 1px solid #10b981; width: 100%; }
         .btn-load-csv:hover { background-color: #047857; }
         .btn-load-cfg { background-color: #3730a3; color: white; border: 1px solid #6366f1; width: 100%; }
@@ -847,9 +850,9 @@
         
         window.addEventListener('beforeunload', (event) => {
             // Cancel the event as stated by the standard.
-            event.preventDefault();
+            // event.preventDefault();
             // Older browsers require a string value to be set.
-            event.returnValue = '';
+            // event.returnValue = '';
         });
 
 
