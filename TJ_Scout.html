@@ -694,6 +694,15 @@
         }
 
         function autofillTeam() {
+            console.log(positionSelect.value);
+
+            if (positionSelect.value.includes('red')) {
+                console.log('red')
+            } else {
+                console.log('blue')
+            }
+
+            
             if (matchSchedule.length === 0) return; 
             
             let matchId = 'matchNumber';
