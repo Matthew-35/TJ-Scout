@@ -578,7 +578,7 @@
                     break;
                 case 'select':
                     html += `<select id="${f.code}" class="input-field">
-                               <option value="">Select an option...</option>`;
+                               <option value="">(${f.title})...</option>`;
                     if (f.choices) {
                         for (const [k, v] of Object.entries(f.choices)) {
                             html += `<option value="${k}" ${k == val ? 'selected' : ''}>${v}</option>`;
