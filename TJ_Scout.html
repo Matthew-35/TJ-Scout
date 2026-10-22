@@ -122,6 +122,8 @@
         
         .btn-blue { background-color: var(--primary); color: white; width: 100%; }
         .btn-blue:hover { background-color: var(--primary-hover); }
+        .btn-red { background-color: var(--danger); color: white; width: 100%; }
+        .btn-red:hover { background-color: var(--danger-hover); }
         .btn-gray { background-color: #4b5563; color: white; width: 100%; }
         .btn-gray:hover { background-color: #374151; }
 
@@ -397,8 +399,9 @@
             </div>
             
             <div class="modal-buttons">
-                <button onclick="copyData()" class="btn btn-small btn-blue">Copy Data</button>
-                <button onclick="closeModal()" class="btn btn-small btn-gray">Close</button>
+                <!-- <button onclick="copyData()" class="btn btn-small btn-blue">Copy Data</button> -->
+                <button onclick="closeModal(true)" class="btn btn-small btn-blue">Done</button>
+                <button onclick="closeModal(false)" class="btn btn-small btn-red">Mark as Not Scanned</button>
             </div>
         </div>
     </div>
@@ -856,7 +859,18 @@
         }
 
 
-        function closeModal() { document.getElementById('qrModal').classList.add('hidden'); }
+        function closeModal(isScanned) {
+            document.getElementById('qrModal').classList.add('hidden');
+            var qrText = document.getElementById('qrText').innerText;
+            if (localStorage.getItem('scannedMatches')) {
+                let scannedMatches = JSON.parse(localStorage.getItem('scannedMatches'));
+                scannedMatches.push([qrText, isScanned]);
+                localStorage.setItem('scannedMatches', JSON.stringify(scannedMatches));
+            } else {
+                localStorage.setItem('scannedMatches', JSON.stringify([[qrText, isScanned]]));
+            }
+        }
+
         function closeSettingsModal() { document.getElementById('settingsModal').classList.add('hidden'); }
         function copyData() {
             navigator.clipboard.writeText(document.getElementById('qrText').innerText)
