@@ -420,6 +420,9 @@
             <input type="file" id="scheduleUpload" accept=".csv" class="hidden-input" onchange="loadSchedule(event)">
             <button onclick="removeSchedule();" class="btn btn-small btn-load-csv" style="margin-top: 0.3rem;">Delete Schedule</button>
             <br>
+
+            <button onclick="deleteSavedMatchData();" class="btn btn-small btn-red" style="margin-top: 0.3rem;">Delete Saved Match Data</button>
+            <br>
             
             
             <div class="modal-buttons">
@@ -855,6 +858,14 @@
             if (confirm("Reset to default config? This cannot be undone.")) {
                 localStorage.removeItem('qrscout_config');
                 location.reload();
+            }
+        }
+
+
+        function deleteSavedMatchData() {
+            if (confirm("Delete all saved match data? This cannot be undone.")) {
+                localStorage.removeItem('scannedMatches');
+                alert("All saved match data deleted.");
             }
         }
 
