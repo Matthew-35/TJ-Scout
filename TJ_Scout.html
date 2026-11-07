@@ -152,6 +152,31 @@
             gap: 1rem;
         }
 
+        #formContainer.two-column-mode {
+            max-width: 1200px;
+        }
+
+        #formContainer.two-column-mode .fields-wrapper {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .layout-setting {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            width: 100%;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            color: var(--text-main);
+        }
+
+        @media (max-width: 600px) {
+            #formContainer.two-column-mode .fields-wrapper {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .field-container {
             padding: 0.5rem;
             border-radius: 0.5rem;
@@ -401,7 +426,7 @@
             <div class="modal-buttons">
                 <!-- <button onclick="copyData()" class="btn btn-small btn-blue">Copy Data</button> -->
                 <button onclick="closeModal(true)" class="btn btn-small btn-blue">Done</button>
-                <button onclick="closeModal(false)" class="btn btn-small btn-red">Mark as Not Scanned</button>
+                <!-- <button onclick="closeModal(false)" class="btn btn-small btn-red">Mark as Not Scanned</button> -->
             </div>
         </div>
     </div>
@@ -411,13 +436,18 @@
         <div class="modal-content">
             <h2 class="modal-title">Settings</h2>
 
+            <label class="layout-setting">
+                <input type="checkbox" id="twoColumnMode" onchange="setTwoColumnMode(this.checked)">
+                <span>Two-column data entry</span>
+            </label>
+
             <label for="configUpload" class="btn btn-small btn-load-cfg">Load Config JSON</label>
             <input type="file" id="configUpload" accept=".json" class="hidden-input" onchange="loadConfig(event)">
             <button onclick="resetConfig();" class="btn btn-small btn-load-cfg" style="margin-top: 0.3rem;">Reset Config</button>
             <br>
 
             <label for="scheduleUpload" class="btn btn-small btn-load-csv">Load Schedule CSV</label>
-            <input type="file" id="scheduleUpload" accept=".csv" class="hidden-input" onchange="loadSchedule(event)">
+            <input type="file" id="scheduleUpload" accept=".csv, text/csv, application/csv, text/comma-separated-values, application/vnd.ms-excel" class="hidden-input" onchange="loadSchedule(event)">
             <button onclick="removeSchedule();" class="btn btn-small btn-load-csv" style="margin-top: 0.3rem;">Delete Schedule</button>
             <br>
 
@@ -463,6 +493,10 @@
         // ---------------------------------------------------------
 
         function bootApp() {
+            const twoColumnMode = localStorage.getItem('qrscout_two_column_mode') === 'true';
+            document.getElementById('twoColumnMode').checked = twoColumnMode;
+            document.getElementById('formContainer').classList.toggle('two-column-mode', twoColumnMode);
+
             // 1. Attempt to load config from LocalStorage
             const storedConfig = localStorage.getItem('qrscout_config');
             if (storedConfig) {
@@ -841,6 +875,11 @@
         function savePositionSelection() {
             localStorage.setItem("selectedPosition", positionSelect.value);
             // console.log(positionSelect.value);
+        }
+
+        function setTwoColumnMode(enabled) {
+            document.getElementById('formContainer').classList.toggle('two-column-mode', enabled);
+            localStorage.setItem('qrscout_two_column_mode', enabled ? 'true' : 'false');
         }
 
 
